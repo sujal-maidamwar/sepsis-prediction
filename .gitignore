@@ -1,0 +1,13 @@
+# Ignore virtual environments
+venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Other common ignores
+*.log
+*.sqlite3
+.DS_Store
