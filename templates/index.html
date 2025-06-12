@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sepsis Risk Predictor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+      background-color: #d9e4f5;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 40px;
+      background: #d9e4f5;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      width: 85%;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      text-align: center;
+      color: #333;
+      margin-bottom: 40px;
+    }
+
+    .btn-upload {
+      border: 2px dashed #283da7;
+      background-color: transparent;
+      padding: 15px 30px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 15px;
+    }
+
+    .btn-predict {
+      background-color: #283da7;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .btn-predict:hover {
+      background-color: #1f2f80;
+      transform: scale(1.05);
+    }
+
+    .result-card {
+      padding: 20px;
+      border-radius: 8px;
+      color: white;
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .result-card.low { background-color: #28a745; }
+    .result-card.moderate { background-color: #ff8c00; }
+    .result-card.high { background-color: #dc3545; }
+
+    .graph, .summary-table, .interpretation {
+      margin-top: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 15px;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f1f1f1;
+    }
+
+    .interpretation {
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .error-message {
+      background-color: #dc3545;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+
+    .info-section {
+      background-color: #f8f9fa;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 40px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+      color: #333;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .info-section h2, .info-section h3 {
+      color: #333;
+      margin-top: 1em;
+    }
+
+    .info-section ul {
+      padding-left: 20px;
+      color: #444;
+      margin-top: 0.5em;
+    }
+
+    /* Navbar styles */
+    .navbar {
+      background-color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 15px 0;
+      width: 100%;
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: center;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 40px;
+      padding: 0;
+      margin: 0;
+    }
+
+    .nav-links li a {
+      text-decoration: none;
+      font-weight: 400;
+      color: #333;
+      font-size: 16px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .nav-links li a:hover {
+      font-weight: bold;
+      text-decoration: underline;
+    }
+
+    
+    body > .container {
+      margin-top: 80px; 
+    }
+
+    form#predict {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-container">
+      <ul class="nav-links">
+        <li><a href="#predict">Predict</a></li>
+        <li><a href="#understanding">Understanding Sepsis</a></li>
+        <li><a href="#results">Results</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>🩺 Sepsis Risk Prediction System</h1>
+
+    <div class="info-section" id="understanding">
+      <h3>What is Sepsis?</h3>
+      <p>Sepsis is a dangerous medical condition that happens when your body’s immune system reacts excessively to an infection. Instead of just fighting the infection, the immune system triggers widespread inflammation that can damage organs and tissues. If not treated quickly, sepsis can lead to organ failure and even death.</p>
+      
+      <h3>Why Early Prediction Matters</h3>
+      <p>Sepsis can develop and worsen very quickly—sometimes within hours. Early prediction helps healthcare providers identify at-risk patients before severe symptoms appear. This allows doctors to begin treatment sooner, which greatly improves survival chances and reduces complications. Early intervention also helps reduce the need for intensive care and long hospital stays, improving overall patient safety.</p>
+      
+      <h3>Causes of Sepsis</h3>
+      <p>Sepsis most commonly starts from infections such as pneumonia (lung infection), urinary tract infections, skin infections, or infections after surgery. It can affect anyone but is especially risky for people whose immune systems are weakened by illness, age, or medication.</p>
+      
+      <h3>Who is at Risk?</h3>
+      <ul>
+        <li>Newborn babies and the elderly</li>
+        <li>People with chronic diseases like diabetes, cancer, or kidney disease</li>
+        <li>Patients who have undergone surgery or invasive procedures</li>
+        <li>Individuals with weakened immune systems due to medication or illness</li>
+        <li>Patients in intensive care units (ICUs)</li>
+      </ul>
+      
+      <h3>Symptoms to Watch For</h3>
+      <ul>
+        <li>High fever or very low body temperature</li>
+        <li>Rapid heartbeat and fast breathing</li>
+        <li>Confusion, difficulty thinking clearly, or disorientation</li>
+        <li>Low blood pressure causing dizziness or fainting</li>
+        <li>Extreme weakness or cold, pale, clammy skin</li>
+      </ul>
+      
+      <h3>How is Sepsis Diagnosed?</h3>
+      <p>Doctors diagnose sepsis by:</p>
+      <ul>
+        <li>Taking blood tests to detect infection and organ function</li>
+        <li>Monitoring vital signs such as heart rate, breathing rate, and blood pressure</li>
+        <li>Using imaging tests like X-rays or ultrasounds to find the source of infection</li>
+      </ul>
+      
+      <h3>How Can Early Prediction Help?</h3>
+      <p>Modern technology uses patient data and machine learning to predict the risk of sepsis before it becomes severe. By analyzing patterns in vital signs, lab results, and medical history, these tools alert doctors early so they can act quickly. Early prediction leads to timely treatment, reducing complications and improving patient outcomes.</p>
+      
+      <h3>Learn More</h3>
+      <p>For more detailed information about sepsis, prevention, and treatment, visit trusted organizations:</p>
+      <ul>
+        <li><a href="https://www.who.int/health-topics/sepsis" target="_blank" rel="noopener noreferrer">World Health Organization (WHO)</a></li>
+        <li><a href="https://www.cdc.gov/sepsis" target="_blank" rel="noopener noreferrer">Centers for Disease Control and Prevention (CDC)</a></li>
+      </ul>
+    </div>
+
+  
+    <form method="POST" enctype="multipart/form-data" id="predict">
+      <input type="file" name="file" accept=".psv" required class="btn-upload">
+      <button type="submit" class="btn-predict">Predict</button>
+    </form>
+
+    {% if error %}
+    <div class="error-message">{{ error }}</div>
+    {% endif %}
+
+    {% if risk_percent %}
+    <div id="results">
+      <div class="result-card {{ risk_label|lower }}">
+        <h3>Risk Level: {{ risk_label }} ({{ risk_percent }}%)</h3>
+      </div>
+
+      <div class="graph">
+        <h3>Risk Trend Over Time</h3>
+        <img src="/{{ trend_image }}" alt="Risk Trend" width="80%">
+      </div>
+
+      <div class="summary-table">
+        <h3>Patient Summary</h3>
+        <table>
+          {% for key, value in summary.items() %}
+          <tr>
+            <th>{{ key }}</th>
+            <td>{{ value }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+
+      <div class="interpretation">
+        <h3>Interpretation</h3>
+        <p>{{ interpretation }}</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>
