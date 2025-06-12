@@ -63,6 +63,27 @@ python app.py
 Open your browser at: http://localhost:5000
 
 Technologies Used
+ GitHub Repository Access & Update Instructions
+
+GitHub Repo URL: https://github.com/sujal-maidamwar/sepsis-prediction.git
+
+🔄 Clone the Repository:
+
+git clone https://github.com/sujal-maidamwar/sepsis-prediction.git
+cd sepsis-prediction
+
+📝 Make Changes:
+
+Edit files as needed in VS Code or any editor.
+
+📤 Commit and Push Changes:
+
+git add .
+git commit -m "Updated project files"
+git push origin main
+
+🔒 Make sure you're logged into your GitHub account and have write access.
+
 
 LSTM: For sequence modeling over time-series vitals
 
